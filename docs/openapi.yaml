@@ -1,0 +1,1132 @@
+openapi: 3.0.3
+
+info:
+  title: Recipe API
+  version: 1.0.0
+  description: API Documentation for Recipe API
+
+servers:
+  - url: http://localhost:8081/api
+
+tags:
+  - name: Recipe
+    description: Operations related to recipes
+  - name: Ingredient
+    description: Operations related to ingredients
+  - name: Collection
+    description: Operations related to collections
+  - name: Auth
+    description: User authentication endpoints
+
+paths:
+  /recipes:
+    get:
+      tags:
+        - Recipe
+      summary: Get all recipes
+      description: Retrieve a list of all recipes
+      parameters:
+        - $ref: '#/components/parameters/RecipeSearch'
+        - $ref: '#/components/parameters/RecipeSortBy'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A list of recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+        '400':
+          $ref: '#/components/responses/InvalidQueryInput'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Recipe
+      summary: Create a new recipe
+      description: Create a new recipe 
+      requestBody:
+        description: The recipe object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '201':
+          description: Recipe successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          $ref: '#/components/responses/InvalidRecipeInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /recipes/{id}:
+    get:
+      tags:
+        - Recipe
+      summary: Get a recipe by ID
+      description: Retrieve a single recipe by its ID
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+      responses:
+        '200':
+          description: A single recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Recipe
+      summary: Update a recipe by ID
+      description: Update a single recipe by its ID 
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+      requestBody:
+        description: Fields to update. At least one of title, instructions, prepTime, or difficulty must be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '200':
+          description: Recipe updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          $ref: '#/components/responses/InvalidRecipeInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Recipe
+      summary: Delete a recipe by ID
+      description: Delete a single recipe by its ID
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+      responses:
+        '204':
+          description: Recipe deleted successfully
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /ingredients:
+    get:
+      tags:
+        - Ingredient
+      summary: Get all ingredients
+      description: Retrieve a list of all ingredients
+      parameters:
+        - $ref: '#/components/parameters/IngredientSearch'
+        - $ref: '#/components/parameters/IngredientSortBy'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A list of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Ingredient
+      summary: Create a new ingredient
+      description: Create a new ingredient
+      requestBody:
+        description: The ingredient object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ingredient'
+      responses:
+        '201':
+          description: Ingredient successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        '400':
+          $ref: '#/components/responses/InvalidIngredientInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/DuplicateIngredient'
+
+  /ingredients/{id}:
+    get:
+      tags:
+        - Ingredient
+      summary: Get an ingredient by ID
+      description: Retrieve a single ingredient by its ID
+      parameters:
+        - $ref: '#/components/parameters/IngredientId'
+      responses:
+        '200':
+          description: A single ingredient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Ingredient
+      summary: Update an ingredient by ID
+      description: Update a single ingredient by its ID
+      parameters:
+        - $ref: '#/components/parameters/IngredientId'
+      requestBody:
+        description: Fields to update. At least one of name, description, or category must be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Ingredient updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        '400':
+          $ref: '#/components/responses/InvalidIngredientInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Ingredient
+      summary: Delete an ingredient by ID
+      description: Delete a single ingredient by its ID
+      parameters:
+        - $ref: '#/components/parameters/IngredientId'
+      responses:
+        '204':
+          description: Ingredient deleted successfully
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /collections:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Get all collections
+      description: Retrieve all collections belonging to the logged-in user
+      parameters:
+        - $ref: '#/components/parameters/CollectionSearch'
+        - $ref: '#/components/parameters/CollectionSortBy'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A list of collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Create a new collection
+      description: Create a new collection for the logged-in user
+      requestBody:
+        description: The collection object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        '201':
+          description: Collection successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/InvalidCollectionInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/DuplicateCollection'
+
+  /collections/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Get a collection by ID
+      description: Retrieve a single collection by its ID 
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+      responses:
+        '200':
+          description: A single collection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Update a collection by ID
+      description: Update a single collection by its ID 
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+      requestBody:
+        description: Fields to update. At least one of name or description must be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        '200':
+          description: Collection updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/InvalidCollectionInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Delete a collection by ID
+      description: Delete a single collection by its ID 
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+      responses:
+        '204':
+          description: Collection deleted successfully
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /recipes/{id}/ingredients:
+    get:
+      tags:
+        - Recipe
+      summary: Get all ingredients in a recipe
+      description: Retrieve all ingredients for a specific recipe
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+      responses:
+        '200':
+          description: A list of recipe ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeIngredient'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Recipe
+      summary: Add an ingredient to a recipe
+      description: Add an ingredient to a recipe (owner only)
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+      requestBody:
+        description: Ingredient to add with amount and unit
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeIngredientInput'
+      responses:
+        '201':
+          description: Ingredient added to recipe successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeIngredient'
+        '400':
+          $ref: '#/components/responses/InvalidRecipeIngredientInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/DuplicateRecipeIngredient'
+
+  /recipes/{id}/ingredients/{ingredientId}:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Recipe
+      summary: Remove an ingredient from a recipe
+      description: Remove an ingredient from a recipe (owner only)
+      parameters:
+        - $ref: '#/components/parameters/RecipeId'
+        - $ref: '#/components/parameters/IngredientIdPath'
+      responses:
+        '204':
+          description: Ingredient removed from recipe successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /collections/{id}/recipes:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Get all recipes in a collection
+      description: Retrieve all recipes in a collection (owner only)
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+      responses:
+        '200':
+          description: A list of collection recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CollectionRecipe'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Add a recipe to a collection
+      description: Add a recipe to a collection (owner only)
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+      requestBody:
+        description: Recipe to add to the collection
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionRecipeInput'
+      responses:
+        '201':
+          description: Recipe added to collection successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionRecipe'
+        '400':
+          $ref: '#/components/responses/InvalidCollectionRecipeInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/DuplicateCollectionRecipe'
+
+  /collections/{id}/recipes/{recipeId}:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Collection
+      summary: Remove a recipe from a collection
+      description: Remove a recipe from a collection (owner only)
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecipeIdPath'
+      responses:
+        '204':
+          description: Recipe removed from collection successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Authenticate User
+      description: Authenticate user and return an access token.
+      requestBody:
+        required: true
+        description: User Login Credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthCredentials'
+      responses:
+        '200':
+          description: Authentication Successful (returns access token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+              example:
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          $ref: '#/components/responses/InvalidUserInputForLogin'
+        '401':
+          $ref: '#/components/responses/InvalidUserCredentials'
+
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Register User
+      description: Create a new user account
+      requestBody:
+        description: User signup credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthCredentials'
+      responses:
+        '201':
+          description: Sign up successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  email:
+                    type: string
+                    example: "test@test.com"
+                  role:
+                    type: string
+                    enum: [USER, ADMIN]
+                    example: "USER"
+        '400':
+          $ref: '#/components/responses/InvalidUserInputForLogin'
+        '409':
+          $ref: '#/components/responses/DuplicateEmail'
+
+components:
+  schemas:
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        title:
+          type: string
+          example: "Spaghetti Carbonara"
+        instructions:
+          type: string
+          example: "Boil pasta, mix with eggs and cheese..."
+        prepTime:
+          type: integer
+          example: 30
+        difficulty:
+          type: string
+          enum: [EASY, MEDIUM, HARD]
+          example: "MEDIUM"
+        createdAt:
+          type: string
+          readOnly: true
+          example: "2026-06-04T20:30:00Z"
+        authorId:
+          type: integer
+          readOnly: true
+          example: 1
+
+    Ingredient:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: "Salt"
+        description:
+          type: string
+          example: "Common table salt used for seasoning"
+        category:
+          type: string
+          example: "Spice"
+
+    Collection:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: "My Favorite Recipes"
+        description:
+          type: string
+          example: "A collection of my favorite recipes"
+        authorId:
+          type: integer
+          readOnly: true
+          example: 1
+
+    RecipeIngredient:
+      type: object
+      properties:
+        recipeId:
+          type: integer
+          readOnly: true
+          example: 1
+        ingredientId:
+          type: integer
+          readOnly: true
+          example: 1
+        amount:
+          type: number
+          example: 1.5
+        unit:
+          type: string
+          example: "cups"
+        ingredient:
+          $ref: '#/components/schemas/Ingredient'
+
+    RecipeIngredientInput:
+      type: object
+      properties:
+        ingredientId:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          example: 1.5
+        unit:
+          type: string
+          example: "cups"
+
+    CollectionRecipe:
+      type: object
+      properties:
+        collectionId:
+          type: integer
+          readOnly: true
+          example: 1
+        recipeId:
+          type: integer
+          readOnly: true
+          example: 1
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+
+    CollectionRecipeInput:
+      type: object
+      properties:
+        recipeId:
+          type: integer
+          example: 1
+
+    AuthCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN]
+      example:
+        email: "test@test.com"
+        password: "password123"
+        role: "ADMIN"
+
+
+  parameters:
+    RecipeId:
+      name: id
+      in: path
+      required: true
+      description: ID of the recipe
+      schema:
+        type: integer
+        example: 1
+
+    IngredientId:
+      name: id
+      in: path
+      required: true
+      description: ID of the ingredient
+      schema:
+        type: integer
+        example: 1
+
+    RecipeSearch:
+      name: search
+      in: query
+      required: false
+      description: Filter recipes by matching title, difficulty, or prepTime
+      schema:
+        type: string
+        example: "EASY"
+
+    IngredientSearch:
+      name: search
+      in: query
+      required: false
+      description: Filter ingredients by matching name or category
+      schema:
+        type: string
+        example: "spice"
+
+    RecipeSortBy:
+      name: sortBy
+      in: query
+      required: false
+      description: Field to sort by (id, title, prepTime, difficulty, createdAt)
+      schema:
+        type: string
+        enum: [id, title, prepTime, difficulty, createdAt]
+        example: "createdAt"
+
+    IngredientSortBy:
+      name: sortBy
+      in: query
+      required: false
+      description: Field to sort by (id, name, description, category)
+      schema:
+        type: string
+        enum: [id, name, description, category]
+        example: "name"
+
+    CollectionId:
+      name: id
+      in: path
+      required: true
+      description: ID of the collection
+      schema:
+        type: integer
+        example: 1
+
+    IngredientIdPath:
+      name: ingredientId
+      in: path
+      required: true
+      description: ID of the ingredient
+      schema:
+        type: integer
+        example: 1
+
+    RecipeIdPath:
+      name: recipeId
+      in: path
+      required: true
+      description: ID of the recipe
+      schema:
+        type: integer
+        example: 1
+
+    CollectionSearch:
+      name: search
+      in: query
+      required: false
+      description: Filter collections by matching name
+      schema:
+        type: string
+        example: "favorites"
+
+    CollectionSortBy:
+      name: sortBy
+      in: query
+      required: false
+      description: Field to sort by (id, name, description)
+      schema:
+        type: string
+        enum: [id, name, description]
+        example: "name"
+
+    Order:
+      name: order
+      in: query
+      required: false
+      description: Sort order (asc or desc)
+      schema:
+        type: string
+        enum: [asc, desc]
+        example: "asc"
+
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip (pagination)
+      schema:
+        type: integer
+        example: 0
+
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Number of items to return per page (max 50)
+      schema:
+        type: integer
+        example: 10
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Resource 1 not found'
+
+    InvalidId:
+      description: Invalid ID
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors: ['ID must be a positive integer.']
+
+    InvalidRecipeInput:
+      description: Bad request due to invalid recipe input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Title must be between 3 and 200 characters.'
+                - 'Difficulty must be EASY, MEDIUM, or HARD.'
+
+    InvalidIngredientInput:
+      description: Bad request due to invalid ingredient input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Name is required.'
+                - 'Category must be between 1 and 200 characters.'
+
+    InvalidQueryInput:
+      description: Bad request due to invalid query parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'sortBy must be one of id, title, prepTime, difficulty, createdAt'
+
+    Unauthorized:
+      description: Client is not authenticated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Not authenticated. Please provide a valid token.'
+
+    Forbidden:
+      description: Client is not authorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Forbidden: insufficient permission.'
+
+    InvalidUserInputForLogin:
+      description: Bad request due to invalid login input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Email is required'
+                - 'Password is required'
+
+    DuplicateEmail:
+      description: Duplicate email
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Email has already been used'
+
+    InvalidCollectionInput:
+      description: Bad request due to invalid collection input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Name is required.'
+                - 'Description must be at least 3 characters.'
+
+    DuplicateCollection:
+      description: Collection name already exists
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Collection with this name already exists'
+
+    InvalidRecipeIngredientInput:
+      description: Bad request due to invalid recipe ingredient input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Ingredient ID is required.'
+                - 'Amount must be a positive number.'
+                - 'Unit is required.'
+
+    DuplicateRecipeIngredient:
+      description: Ingredient already exists in this recipe
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Ingredient already exists in recipe'
+
+    InvalidCollectionRecipeInput:
+      description: Bad request due to invalid collection recipe input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - 'Recipe ID is required.'
+
+    DuplicateCollectionRecipe:
+      description: Recipe already exists in this collection
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Recipe already exists in this collection'
+
+    DuplicateIngredient:
+      description: Ingredient already exists
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Ingredient already exists'
+
+    InvalidUserCredentials:
+      description: Invalid Credentials
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Invalid credentials'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

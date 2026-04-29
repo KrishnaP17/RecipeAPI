@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     Role   @default(USER)
+
+  recipes     Recipe[]
+  collections Collection[]
+
+  @@map("users")
+}
+
+model Recipe {
+  id           Int        @id @default(autoincrement())
+  title        String
+  instructions String
+  prepTime     Int        @map("prep_time")
+  difficulty   Difficulty
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  // (foreign keys)
+  authorId Int  @map("user_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  recipeIngredients RecipeIngredient[]
+  collectionRecipes CollectionRecipe[]
+
+  @@map("recipes")
+}
+
+model Ingredient {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+  category    String
+
+  recipeIngredients RecipeIngredient[]
+
+  @@map("ingredients")
+}
+
+model Collection {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  authorId Int  @map("user_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  collectionRecipes CollectionRecipe[]
+
+  @@map("collections")
+}
+
+model RecipeIngredient {
+  recipeId     Int    @map("recipe_id") //PK FK 
+  ingredientId Int    @map("ingredient_id") //PK FK
+  amount       Float
+  unit         String
+
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, ingredientId])
+  @@map("recipe_ingredients")
+}
+
+model CollectionRecipe {
+  collectionId Int @map("collection_id")
+  recipeId     Int @map("recipe_id")
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, recipeId])
+  @@map("collection_recipes")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
