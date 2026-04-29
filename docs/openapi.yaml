@@ -7,6 +7,9 @@ info:
 
 servers:
   - url: http://localhost:8081/api
+    description: Local server
+  - url: https://recipeapi-3-2a36.onrender.com/api
+    description: Production server
 
 tags:
   - name: Recipe
