@@ -11,7 +11,9 @@
     "seed": "node --env-file=.env prisma/seed.js",
     "build": "prisma migrate deploy && node --env-file=.env prisma/seed.js",
     "start": "node src/server.js",
-    "migrate:deploy": "prisma migrate deploy"
+    "migrate:deploy": "prisma migrate deploy",
+    "seed:prod": "node prisma/seed.js"
+
   },
 
   "devDependencies": {
